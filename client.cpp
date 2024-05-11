@@ -25,13 +25,13 @@ void read(ip::tcp::socket& socket) {
 int main() {
     try {
         std::string username;
-        std::cout << "Введите ваше имя: ";
+        std::cout << "Enter ur name: ";
         std::getline(std::cin, username);
 
         ip::tcp::socket socket(service);
         socket.connect(ep);
 
-        std::cout << "Подключение к серверу." << std::endl;
+        std::cout << "Connected to server" << std::endl;
 
         write(socket, buffer(username + "\n"));
 
@@ -39,7 +39,7 @@ int main() {
 
         while (true) {
             std::string input;
-            std::cout << "Введите сообщение: ";
+            std::cout << "Enter message "  << "(" << username << ")" << ": ";
             std::getline(std::cin, input);
             input += "\n";
 
@@ -48,12 +48,12 @@ int main() {
             write(socket, buffer(message));
 
             if (input == "exit\n") {
-                std::cout << "Закрытие соединения." << std::endl;
+                std::cout << "Close connection" << std::endl;
                 break;
             }
         }
     } catch (std::exception& e) {
-        std::cerr << "Ошибка: " << e.what() << std::endl;
+        std::cerr << "Error: " << e.what() << std::endl;
     }
     return 0;
 }

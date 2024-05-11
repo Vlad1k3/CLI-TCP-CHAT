@@ -1,5 +1,6 @@
 #include <iostream>
 #include <boost/asio.hpp>
+#include <ctime>
 
 using namespace boost::asio;
 
@@ -7,8 +8,9 @@ void read(ip::tcp::socket& socket, streambuf& buf) {
     async_read_until(socket, buf, '\n',
         [&socket, &buf](const boost::system::error_code& error, std::size_t bytes_transferred) {
             if (!error) {
+                std::time_t now = std::time(nullptr);
                 std::string msg(boost::asio::buffer_cast<const char*>(buf.data()), bytes_transferred);
-                std::cout << msg << std::endl;
+                std::cout << std::asctime(std::localtime(&now)) << msg << std::endl;
                 buf.consume(bytes_transferred);
                 read(socket, buf); 
             } else {

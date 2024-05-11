@@ -5,6 +5,7 @@
 #include <boost/asio.hpp>
 #include <deque>
 #include <memory>
+#include <ctime>
 
 using namespace boost::asio;
 
@@ -23,6 +24,7 @@ public:
 
 private:
     void read() {
+        
         auto self(shared_from_this());
         async_read_until(socket, read_msg, '\n',
             [this, self](const boost::system::error_code& error, std::size_t bytes_transferred) {
@@ -42,8 +44,9 @@ private:
                                 session->write(username + ": " + text);
                             }
                         }
+                        std::time_t now = std::time(nullptr);
 
-                        std::cout << username << ": " << text << '\n';  
+                        std::cout << std::asctime(std::localtime(&now)) << username << ": " << text << '\n';  
                     }
 
                     read();
@@ -88,6 +91,7 @@ class Server {
 public:
     Server(short port) : acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), port)) {
         start_accept();
+        std::cout << "Server booted" << std::endl;
     }
 
 
@@ -98,7 +102,7 @@ private:
     void start_accept() {
         acceptor.async_accept([this](const boost::system::error_code& error, ip::tcp::socket socket) {
             if (!error) {
-                std::cout << "Вошел новый\n";  
+                std::cout << "New user connected\n" << "\n";  
                 auto new_session = std::make_shared<Session>(std::move(socket), sessions_);
                 sessions_.push_back(new_session);
                 new_session->start();
